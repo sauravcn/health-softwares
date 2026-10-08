@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}EVV Visits{% endblock %}
+{% block content %}
+<h1>Electronic Visit Verification</h1>
+<p class="hint">Check in via <code>POST /api/visits/check-in</code>, check out via <code>POST /api/visits/{id}/check-out</code>. Check-out auto-creates the payroll timesheet and consumes authorized units.</p>
+<div class="section">
+  <table>
+    <tr><th>ID</th><th>Shift</th><th>Caregiver</th><th>Client</th><th>In</th><th>Out</th><th>GPS</th><th>Status</th><th>Flags</th></tr>
+    {% for v in visits %}
+    <tr>
+      <td>#{{ v.id }}</td><td>#{{ v.shift_id }}</td>
+      <td>{{ caregivers.get(v.caregiver_id, v.caregiver_id) }}</td>
+      <td>{{ clients.get(v.client_id, v.client_id) }}</td>
+      <td>{{ v.check_in_at or "—" }}</td><td>{{ v.check_out_at or "—" }}</td>
+      <td>{% if v.check_in_lat %}{{ "%.4f"|format(v.check_in_lat) }}, {{ "%.4f"|format(v.check_in_lng) }}{% else %}—{% endif %}</td>
+      <td><span class="pill p-{{ v.verification_status }}">{{ v.verification_status }}</span></td>
+      <td>{{ (v.flags or []) | join(", ") }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9">No visits yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

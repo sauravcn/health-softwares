@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Admin{% endblock %} · {{ agency }} · HealthSoftwares</title>
+<style>
+  :root { --navy:#0f2a43; --gold:#e0a83c; --ink:#1d2b3a; --muted:#6b7a8d; --bg:#f4f6f9; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--navy); color:#fff; padding:14px 28px; display:flex; align-items:center; gap:24px; }
+  header .brand { font-weight:800; font-size:20px; }
+  header .brand span { color:var(--gold); }
+  nav a { color:#cdd8e4; text-decoration:none; margin-right:18px; font-size:14px; }
+  nav a:hover { color:#fff; }
+  main { max-width:1100px; margin:28px auto; padding:0 20px; }
+  h1 { font-size:26px; margin:0 0 18px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; margin-bottom:28px; }
+  .card { background:#fff; border-radius:10px; padding:16px 18px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .card .num { font-size:30px; font-weight:800; color:var(--navy); }
+  .card .lbl { font-size:13px; color:var(--muted); margin-top:4px; }
+  table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.08); font-size:14px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid #eef1f5; }
+  th { background:var(--navy); color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  tr:last-child td { border-bottom:none; }
+  .pill { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .p-verified,.p-paid,.p-approved,.p-completed { background:#e6f6ec; color:#1c7a3d; }
+  .p-flagged,.p-denied,.p-overdue,.p-missed { background:#fdecec; color:#b3261e; }
+  .p-pending,.p-scheduled,.p-open,.p-draft,.p-submitted,.p-assigned,.p-in_progress,.p-ready { background:#fff4dd; color:#9a6b12; }
+  .p-transmitted,.p-acknowledged { background:#e8f0fe; color:#1a56db; }
+  .section { margin-bottom:34px; }
+  .section h2 { font-size:18px; margin:0 0 12px; color:var(--navy); }
+  .hint { color:var(--muted); font-size:13px; margin-bottom:12px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
+  code { background:#eef1f5; padding:1px 6px; border-radius:4px; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Health<span>Softwares</span></div>
+  <nav>
+    <a href="/admin">Dashboard</a>
+    <a href="/admin/shifts">Scheduling</a>
+    <a href="/admin/evv">EVV Dashboard</a>
+    <a href="/admin/claims">Billing &amp; EVV Batches</a>
+    <a href="/admin/caregivers">Caregivers &amp; Compliance</a>
+    <a href="/admin/workflows">Workflows</a>
+  </nav>
+</header>
+<main>
+  {% block content %}{% endblock %}
+</main>
+<footer>{{ agency }} · HealthSoftwares v0.1 · All times UTC</footer>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Caregivers{% endblock %}
+{% block content %}
+<h1>Caregivers, Ratings &amp; Compliance</h1>
+<div class="section">
+  <h2>Caregivers</h2>
+  <table>
+    <tr><th>Name</th><th>Phone</th><th>Skills</th><th>Status</th><th>Avg rating</th><th># ratings</th></tr>
+    {% for c in caregivers %}
+    <tr>
+      <td>{{ c.name }}</td><td>{{ c.phone or "—" }}</td>
+      <td>{{ (c.skills or []) | join(", ") }}</td>
+      <td><span class="pill p-{{ c.status }}">{{ c.status }}</span></td>
+      <td>{{ summaries[c.id].avg if summaries[c.id].avg is not none else "—" }}</td>
+      <td>{{ summaries[c.id].count }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No caregivers yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="section">
+  <h2>Overdue training &amp; compliance</h2>
+  <table>
+    <tr><th>Caregiver</th><th>Course</th><th>Due</th><th>Status</th></tr>
+    {% for a in overdue %}
+    <tr>
+      <td>{{ cg_names.get(a.caregiver_id, a.caregiver_id) }}</td>
+      <td>{{ courses.get(a.course_id, a.course_id) }}</td>
+      <td>{{ a.due_date }}</td>
+      <td><span class="pill p-overdue">overdue</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Nothing overdue. 🎉</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

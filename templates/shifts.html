@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Scheduling{% endblock %}
+{% block content %}
+<h1>Scheduling &amp; Shift Trading</h1>
+<p class="hint">Create shifts via <code>POST /api/shifts</code>; trades via <code>POST /api/trades</code> and approve with <code>POST /api/trades/{id}/decide</code>.</p>
+{% if trades %}
+<div class="section">
+  <h2>Pending trade requests</h2>
+  <table>
+    <tr><th>ID</th><th>Shift</th><th>Requester</th><th>Offered to</th><th>Note</th></tr>
+    {% for t in trades %}
+    <tr>
+      <td>#{{ t.id }}</td><td>#{{ t.shift_id }}</td>
+      <td>{{ caregivers.get(t.requester_id, t.requester_id) }}</td>
+      <td>{{ caregivers.get(t.offered_to_id, "—") }}</td>
+      <td>{{ t.note or "—" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+<div class="section">
+  <h2>Shifts</h2>
+  <table>
+    <tr><th>ID</th><th>Starts</th><th>Ends</th><th>Client</th><th>Caregiver</th><th>Service</th><th>Status</th></tr>
+    {% for s in shifts %}
+    <tr>
+      <td>#{{ s.id }}</td><td>{{ s.starts_at }}</td><td>{{ s.ends_at }}</td>
+      <td>{{ clients.get(s.client_id, s.client_id) }}</td>
+      <td>{{ caregivers.get(s.caregiver_id, "—") }}</td>
+      <td>{{ s.service_type }}</td>
+      <td><span class="pill p-{{ s.status }}">{{ s.status }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7">No shifts yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

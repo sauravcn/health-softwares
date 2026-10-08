@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}EVV Dashboard{% endblock %}
+{% block content %}
+<h1>EVV Dashboard — {{ today.date() }}</h1>
+<p class="hint">Business rules: {{ agency.late_grace_minutes }} min late grace ·
+{{ agency.early_departure_grace_minutes }} min early-departure grace ·
+{{ agency.geofence_radius_km }} km geofence (<a href="/docs">tune via PATCH /api/agency</a>)</p>
+
+<div class="cards">
+  <div class="card"><div class="num">{{ report.total }}</div><div class="lbl">Visits (7 days)</div></div>
+  <div class="card"><div class="num">{{ report.verified }}</div><div class="lbl">Verified</div></div>
+  <div class="card"><div class="num">{{ report.flagged }}</div><div class="lbl">Flagged</div></div>
+  <div class="card"><div class="num">{{ report.open_exceptions }}</div><div class="lbl">Open exceptions</div></div>
+</div>
+
+<div class="section">
+  <h2>Exception queue</h2>
+  <table>
+    <tr><th>Type</th><th>Visit</th><th>Shift</th><th>Detail</th><th>Status</th><th></th></tr>
+    {% for e in exceptions %}
+    <tr>
+      <td><strong>{{ e.exception_type }}</strong></td>
+      <td>{{ "#" ~ e.visit_id if e.visit_id else "—" }}</td>
+      <td>{{ "#" ~ e.shift_id if e.shift_id else "—" }}</td>
+      <td>{{ e.detail }}</td>
+      <td><span class="pill p-{{ 'flagged' if e.status == 'open' else 'pending' }}">{{ e.status }}</span></td>
+      <td style="white-space:nowrap">
+        {% if e.status == "open" %}
+        <form method="post" action="/admin/exceptions/{{ e.id }}/acknowledge" style="display:inline">
+          <button type="submit">Acknowledge</button>
+        </form>
+        {% endif %}
+        {% if e.status != "resolved" %}
+        <form method="post" action="/admin/exceptions/{{ e.id }}/resolve" style="display:inline">
+          <button type="submit">Resolve</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Queue clear. 🎉</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="section">
+  <h2>Today's visits</h2>
+  <table>
+    <tr><th>ID</th><th>Caregiver</th><th>Client</th><th>In</th><th>Out</th><th>Method</th><th>Status</th><th>Flags</th></tr>
+    {% for v in visits_today %}
+    <tr>
+      <td>#{{ v.id }}</td>
+      <td>{{ caregivers.get(v.caregiver_id, v.caregiver_id) }}</td>
+      <td>{{ clients.get(v.client_id, v.client_id) }}</td>
+      <td>{{ v.check_in_at.strftime("%H:%M") if v.check_in_at else "—" }}</td>
+      <td>{{ v.check_out_at.strftime("%H:%M") if v.check_out_at else "—" }}</td>
+      <td>{{ v.method }}</td>
+      <td><span class="pill p-{{ v.verification_status }}">{{ v.verification_status }}</span></td>
+      <td>{{ (v.flags or []) | join(", ") }}</td>
+    </tr>
+    {% endfor %}
+    {% for s in upcoming %}
+    <tr>
+      <td>—</td>
+      <td>{{ caregivers.get(s.caregiver_id, "—") }}</td>
+      <td>{{ clients.get(s.client_id, s.client_id) }}</td>
+      <td colspan="2">scheduled {{ s.starts_at.strftime("%H:%M") }}–{{ s.ends_at.strftime("%H:%M") }}</td>
+      <td>—</td>
+      <td><span class="pill p-pending">upcoming</span></td>
+      <td></td>
+    </tr>
+    {% endfor %}
+    {% if not visits_today and not upcoming %}
+    <tr><td colspan="8">No visits today.</td></tr>
+    {% endif %}
+  </table>
+</div>
+
+<div class="section">
+  <h2>Verification report &amp; export</h2>
+  <p class="hint">
+    Export this week (state-aggregator format):
+    <a href="/api/evv/export?format=json&period_start={{ week_start.isoformat() }}&period_end={{ tomorrow.isoformat() }}">JSON</a> ·
+    <a href="/api/evv/export?format=csv&period_start={{ week_start.isoformat() }}&period_end={{ tomorrow.isoformat() }}">CSV</a>
+  </p>
+</div>
+{% endblock %}

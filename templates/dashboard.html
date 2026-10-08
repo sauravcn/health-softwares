@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>{{ agency }} — Agency Dashboard</h1>
+<div class="cards">
+  <div class="card"><div class="num">{{ stats.caregivers }}</div><div class="lbl">Caregivers</div></div>
+  <div class="card"><div class="num">{{ stats.clients }}</div><div class="lbl">Clients</div></div>
+  <div class="card"><div class="num">{{ stats.shifts_today }}</div><div class="lbl">Shifts today</div></div>
+  <div class="card"><div class="num">{{ stats.open_shifts }}</div><div class="lbl">Open shifts</div></div>
+  <div class="card"><div class="num">{{ stats.flagged_visits }}</div><div class="lbl">Flagged EVV visits</div></div>
+  <div class="card"><div class="num">{{ stats.pending_trades }}</div><div class="lbl">Pending shift trades</div></div>
+  <div class="card"><div class="num">{{ stats.claims_draft }}</div><div class="lbl">Draft claims</div></div>
+  <div class="card"><div class="num">{{ stats.overdue_training }}</div><div class="lbl">Overdue trainings</div></div>
+</div>
+<div class="section">
+  <h2>Recent EVV visits</h2>
+  <table>
+    <tr><th>ID</th><th>Check-in</th><th>Check-out</th><th>Method</th><th>Status</th><th>Flags</th></tr>
+    {% for v in visits %}
+    <tr>
+      <td>#{{ v.id }}</td>
+      <td>{{ v.check_in_at or "—" }}</td>
+      <td>{{ v.check_out_at or "—" }}</td>
+      <td>{{ v.method }}</td>
+      <td><span class="pill p-{{ v.verification_status }}">{{ v.verification_status }}</span></td>
+      <td>{{ (v.flags or []) | join(", ") }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No visits yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

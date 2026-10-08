@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Billing{% endblock %}
+{% block content %}
+<h1>Billing / Claims &amp; EVV Aggregator</h1>
+<p class="hint">Claims flow: <code>POST /api/claims</code> (draft) → <code>/submit</code> → <code>/adjudicate</code>. Batches: <code>POST /api/evv-batches</code> then <code>/transmit</code>.</p>
+<div class="section">
+  <h2>Claims</h2>
+  <table>
+    <tr><th>ID</th><th>Client</th><th>Payer</th><th>Service dates</th><th>Units</th><th>Amount</th><th>Status</th></tr>
+    {% for c in claims %}
+    <tr>
+      <td>#{{ c.id }}</td><td>{{ clients.get(c.client_id, c.client_id) }}</td><td>{{ c.payer }}</td>
+      <td>{{ c.service_date_from.date() }} → {{ c.service_date_to.date() }}</td>
+      <td>{{ c.units }}</td><td>${{ "%.2f"|format(c.amount) }}</td>
+      <td><span class="pill p-{{ c.status }}">{{ c.status }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7">No claims yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="section">
+  <h2>EVV aggregator batches</h2>
+  <table>
+    <tr><th>ID</th><th>Payer</th><th>Period</th><th>Visits</th><th>Status</th></tr>
+    {% for b in batches %}
+    <tr>
+      <td>#{{ b.id }}</td><td>{{ b.payer }}</td>
+      <td>{{ b.period_start.date() }} → {{ b.period_end.date() }}</td>
+      <td>{{ b.visit_count }}</td>
+      <td><span class="pill p-{{ b.status }}">{{ b.status }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No batches yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
